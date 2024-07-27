@@ -8,72 +8,88 @@
                     "bedtools/coverage": {
                         "branch": "master",
                         "git_sha": "1d1cb7bfef6cf67fbc7faafa6992ad8bdc3045b3",
-                        "installed_by": ["modules"]
-                    },
-                    "bwa/index": {
-                        "branch": "master",
-                        "git_sha": "e0ff65e1fb313677de09f5f477ae3da30ce19b7b",
-                        "installed_by": ["modules"]
-                    },
-                    "bwa/mem": {
-                        "branch": "master",
-                        "git_sha": "e0ff65e1fb313677de09f5f477ae3da30ce19b7b",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "fastqc": {
                         "branch": "master",
                         "git_sha": "285a50500f9e02578d90b3ce6382ea3c30216acd",
-                        "installed_by": ["modules"]
-                    },
-                    "kraken2/build": {
-                        "branch": "master",
-                        "git_sha": "ca87ad032a62f025f0c373facacef2df0c5411b2",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "kraken2/kraken2": {
                         "branch": "master",
                         "git_sha": "ca87ad032a62f025f0c373facacef2df0c5411b2",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
+                    },
+                    "krakentools/extractkrakenreads": {
+                        "branch": "master",
+                        "git_sha": "77decb880af3f0ea6d22b2383c3f1ed86aac4aa2",
+                        "installed_by": [
+                            "modules"
+                        ],
+                        "patch": "modules/nf-core/krakentools/extractkrakenreads/krakentools-extractkrakenreads.diff"
                     },
                     "megahit": {
                         "branch": "master",
                         "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "multiqc": {
                         "branch": "master",
                         "git_sha": "b7ebe95761cd389603f9cc0e0dc384c0f663815a",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "prodigal": {
                         "branch": "master",
                         "git_sha": "2a196d6bfea8b6b5f49fc1885e39fae5f50bc2a0",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ],
+                        "patch": "modules/nf-core/prodigal/prodigal.diff"
                     },
                     "samtools/depth": {
                         "branch": "master",
                         "git_sha": "04fbbc7c43cebc0b95d5b126f6d9fe4effa33519",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "samtools/index": {
                         "branch": "master",
                         "git_sha": "04fbbc7c43cebc0b95d5b126f6d9fe4effa33519",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "samtools/sort": {
                         "branch": "master",
                         "git_sha": "04fbbc7c43cebc0b95d5b126f6d9fe4effa33519",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "seqkit/fx2tab": {
                         "branch": "master",
                         "git_sha": "2be41ca2cc780eca4293d1b0dd3850b0b7ac40a3",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     },
                     "trimgalore": {
                         "branch": "master",
                         "git_sha": "b4919e9a2b4d8b71061e601633db4600a3858fa1",
-                        "installed_by": ["modules"]
+                        "installed_by": [
+                            "modules"
+                        ]
                     }
                 }
             },
@@ -82,17 +98,23 @@
                     "utils_nextflow_pipeline": {
                         "branch": "master",
                         "git_sha": "5caf7640a9ef1d18d765d55339be751bb0969dfa",
-                        "installed_by": ["subworkflows"]
+                        "installed_by": [
+                            "subworkflows"
+                        ]
                     },
                     "utils_nfcore_pipeline": {
                         "branch": "master",
                         "git_sha": "92de218a329bfc9a9033116eb5f65fd270e72ba3",
-                        "installed_by": ["subworkflows"]
+                        "installed_by": [
+                            "subworkflows"
+                        ]
                     },
                     "utils_nfvalidation_plugin": {
                         "branch": "master",
                         "git_sha": "5caf7640a9ef1d18d765d55339be751bb0969dfa",
-                        "installed_by": ["subworkflows"]
+                        "installed_by": [
+                            "subworkflows"
+                        ]
                     }
                 }
             }
