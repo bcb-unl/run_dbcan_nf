@@ -1,0 +1,15 @@
+Changes in module 'nf-core/prodigal'
+--- modules/nf-core/prodigal/main.nf
++++ modules/nf-core/prodigal/main.nf
+@@ -31,7 +31,8 @@
+         -d "${prefix}.fna" \\
+         -o "${prefix}.${output_format}" \\
+         -a "${prefix}.faa" \\
+-        -s "${prefix}_all.txt"
++        -s "${prefix}_all.txt" \\
++        -p meta
+ 
+     pigz -nm ${prefix}.fna
+     pigz -nm ${prefix}.${output_format}
+
+************************************************************
