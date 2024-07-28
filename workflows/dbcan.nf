@@ -4,12 +4,46 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap       } from 'plugin/nf-validation'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_dbcan_pipeline'
+
+// new modules added by Xinpeng
+
+include { KRAKEN2_DB_PREPARATION          } from '../modules/local/kraken2_db/'
+
+include { KRAKEN2_KRAKEN2                 } from '../modules/nf-core/kraken2/kraken2/main'
+include { KRAKENTOOLS_EXTRACTKRAKENREADS  } from '../modules/nf-core/krakentools/extractkrakenreads/main'
+include { MEGAHIT                         } from '../modules/nf-core/megahit/main'
+include { PRODIGAL                        } from '../modules/nf-core/prodigal/main'
+
+
+// new subworkflows added by Xinpeng
+
+include { FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS } from '../subworkflows/nf-core/fastq_extract_kraken_krakentools'
+include { FASTQC_TRIMGALORE                } from '../subworkflows/local/fastqc_trimgalore'
+
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Prepare the project parameters and databases
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+if(params.kraken_db_archive){
+    ch_kraken2_db_file = file(params.kraken_db_archive, checkIfExists: true)
+} else {
+    ch_kraken2_db_file = []
+}
+
+if(params.kraken_tax){
+    ch_kraken2_tax = params.kraken_tax
+} else {
+    ch_kraken2_tax = []
+}
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,11 +64,51 @@ workflow DBCAN {
     //
     // MODULE: Run FastQC
     //
-    FASTQC (
-        ch_samplesheet
+
+    FASTQC_TRIMGALORE (
+        ch_samplesheet,
+        params.skip_fastqc || params.skip_qc,
+        params.skip_trimming
     )
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC_TRIMGALORE.out.fastqc_zip.collect{it[1]})
+    ch_versions = ch_versions.mix(FASTQC.out.versions)
+
+    //
+    // MODULE: Kraken2 Build Database
+    //
+if (!ch_kraken2_db_file.isEmpty()) {
+    if (ch_kraken2_db_file.extension in ['gz', 'tgz']) {
+        // Expects to be tar.gz!
+        ch_db_for_kraken2 = KRAKEN2_DB_PREPARATION(ch_kraken2_db_file).db
+    } else if (ch_kraken2_db_file.isDirectory()) {
+        // Directly used as database path
+        ch_db_for_kraken2 = Channel.fromPath(ch_kraken2_db_file)
+    } else {
+        ch_db_for_kraken2 = Channel.empty()
+    }
+} else {
+    ch_db_for_kraken2 = Channel.empty()
+}
+
+    //
+    // Subworkflow: Extract classified Kraken2 reads by taxonomic id
+    //
+    FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS (
+            FASTQC_TRIMGALORE.out.reads,
+            ch_db,
+            params.tax_id)
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS.out.report)
+    ch_versions = ch_versions.mix ( FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS.out.versions )
+
+    // MODULE: Megahit to assemble metagenomics
+    MEGAHIT ( FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS.out.extracted_kraken2_reads )
+    ch_versions = ch_versions.mix ( MEGAHIT.out.versions )
+
+    //
+    // MODULE: Prodigal to find genes in bacteria and archaea
+    //
+    PRODIGAL ( ch_contigs, 'gff' )
+    ch_versions = ch_versions.mix(PRODIGAL.out.versions)
 
     //
     // Collate and save software versions

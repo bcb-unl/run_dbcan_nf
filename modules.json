@@ -10,16 +10,6 @@
                         "git_sha": "1d1cb7bfef6cf67fbc7faafa6992ad8bdc3045b3",
                         "installed_by": ["modules"]
                     },
-                    "bwa/index": {
-                        "branch": "master",
-                        "git_sha": "e0ff65e1fb313677de09f5f477ae3da30ce19b7b",
-                        "installed_by": ["modules"]
-                    },
-                    "bwa/mem": {
-                        "branch": "master",
-                        "git_sha": "e0ff65e1fb313677de09f5f477ae3da30ce19b7b",
-                        "installed_by": ["modules"]
-                    },
                     "fastqc": {
                         "branch": "master",
                         "git_sha": "285a50500f9e02578d90b3ce6382ea3c30216acd",
@@ -33,7 +23,13 @@
                     "kraken2/kraken2": {
                         "branch": "master",
                         "git_sha": "ca87ad032a62f025f0c373facacef2df0c5411b2",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fastq_extract_kraken_krakentools", "modules"]
+                    },
+                    "krakentools/extractkrakenreads": {
+                        "branch": "master",
+                        "git_sha": "77decb880af3f0ea6d22b2383c3f1ed86aac4aa2",
+                        "installed_by": ["fastq_extract_kraken_krakentools", "modules"],
+                        "patch": "modules/nf-core/krakentools/extractkrakenreads/krakentools-extractkrakenreads.diff"
                     },
                     "megahit": {
                         "branch": "master",
@@ -48,7 +44,8 @@
                     "prodigal": {
                         "branch": "master",
                         "git_sha": "2a196d6bfea8b6b5f49fc1885e39fae5f50bc2a0",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/prodigal/prodigal.diff"
                     },
                     "samtools/depth": {
                         "branch": "master",
@@ -79,6 +76,11 @@
             },
             "subworkflows": {
                 "nf-core": {
+                    "fastq_extract_kraken_krakentools": {
+                        "branch": "master",
+                        "git_sha": "c60c14b285b89bdd0607e371417dadb80385ad6e",
+                        "installed_by": ["subworkflows"]
+                    },
                     "utils_nextflow_pipeline": {
                         "branch": "master",
                         "git_sha": "5caf7640a9ef1d18d765d55339be751bb0969dfa",

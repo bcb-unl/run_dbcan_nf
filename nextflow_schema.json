@@ -292,5 +292,13 @@
         {
             "$ref": "#/definitions/generic_options"
         }
-    ]
+    ],
+    "properties": {
+        "kraken_db_archive": {
+            "type": "string"
+        },
+        "kraken_tax": {
+            "type": "integer"
+        }
+    }
 }
