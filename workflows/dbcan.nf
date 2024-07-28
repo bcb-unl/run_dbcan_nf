@@ -64,14 +64,13 @@ workflow DBCAN {
     //
     // MODULE: Run FastQC
     //
-
     FASTQC_TRIMGALORE (
         ch_samplesheet,
         params.skip_fastqc || params.skip_qc,
         params.skip_trimming
     )
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC_TRIMGALORE.out.fastqc_zip.collect{it[1]})
-    ch_versions = ch_versions.mix(FASTQC.out.versions)
+    ch_versions = ch_versions.mix(FASTQC_TRIMGALORE.out.versions)
 
     //
     // MODULE: Kraken2 Build Database (Note: better to use nf-core kraken2 db build subworkflow)
@@ -117,7 +116,7 @@ workflow DBCAN {
     //
     // MODULE: Prodigal to find genes in bacteria and archaea
     //
-    PRODIGAL ( ch_contigs, 'gff' )
+    PRODIGAL ( MEGAHIT.out.contigs, 'gff' )
     ch_versions = ch_versions.mix(PRODIGAL.out.versions)
 
     //
