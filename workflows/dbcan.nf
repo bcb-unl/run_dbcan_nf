@@ -74,34 +74,44 @@ workflow DBCAN {
     ch_versions = ch_versions.mix(FASTQC.out.versions)
 
     //
-    // MODULE: Kraken2 Build Database
+    // MODULE: Kraken2 Build Database (Note: better to use nf-core kraken2 db build subworkflow)
     //
-if (!ch_kraken2_db_file.isEmpty()) {
-    if (ch_kraken2_db_file.extension in ['gz', 'tgz']) {
-        // Expects to be tar.gz!
-        ch_db_for_kraken2 = KRAKEN2_DB_PREPARATION(ch_kraken2_db_file).db
-    } else if (ch_kraken2_db_file.isDirectory()) {
-        // Directly used as database path
-        ch_db_for_kraken2 = Channel.fromPath(ch_kraken2_db_file)
+    if (!ch_kraken2_db_file.isEmpty()) {
+        if (ch_kraken2_db_file.extension in ['gz', 'tgz']) {
+            // Expects to be tar.gz!
+            ch_db_for_kraken2 = KRAKEN2_DB_PREPARATION(ch_kraken2_db_file).db
+        } else if (ch_kraken2_db_file.isDirectory()) {
+            // Directly used as database path
+            ch_db_for_kraken2 = Channel.fromPath(ch_kraken2_db_file)
+        } else {
+            ch_db_for_kraken2 = Channel.empty()
+        }
     } else {
         ch_db_for_kraken2 = Channel.empty()
     }
-} else {
-    ch_db_for_kraken2 = Channel.empty()
-}
 
     //
     // Subworkflow: Extract classified Kraken2 reads by taxonomic id
     //
-    FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS (
-            FASTQC_TRIMGALORE.out.reads,
-            ch_db,
-            params.tax_id)
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS.out.report)
-    ch_versions = ch_versions.mix ( FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS.out.versions )
+    extract_kraken2_reads = FASTQC_TRIMGALORE.out.reads
+
+    if (!skip_kraken_extraction) {
+
+        // TODO: build db process
+        // Use nf-core subworkflow at https://nf-co.re/subworkflows/fasta_build_add_kraken2/
+
+        FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS (
+                FASTQC_TRIMGALORE.out.reads,
+                ch_db_for_kraken2,
+                params.tax_id
+        ).extracted_kraken2_reads.set { extracted_kraken2_reads }
+
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS.out.report)
+        ch_versions = ch_versions.mix ( FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS.out.versions )
+    }
 
     // MODULE: Megahit to assemble metagenomics
-    MEGAHIT ( FASTQ_EXTRACT_KRAKEN_KRAKENTOOLS.out.extracted_kraken2_reads )
+    MEGAHIT ( extracted_kraken2_reads )
     ch_versions = ch_versions.mix ( MEGAHIT.out.versions )
 
     //
