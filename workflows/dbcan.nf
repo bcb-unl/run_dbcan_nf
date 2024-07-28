@@ -95,7 +95,7 @@ workflow DBCAN {
     //
     extract_kraken2_reads = FASTQC_TRIMGALORE.out.reads
 
-    if (!skip_kraken_extraction) {
+    if (!params.skip_kraken_extraction) {
 
         // TODO: build db process
         // Use nf-core subworkflow at https://nf-co.re/subworkflows/fasta_build_add_kraken2/
